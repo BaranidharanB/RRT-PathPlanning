@@ -37,11 +37,14 @@ class RRTmap():
 
 
     def drawMap(self,obstacles):
-        pygame.draw.circle(self.map,self.Green,self.startPos,self.nodeRad+5.0)
-        pygame.draw.circle(self.map,self.Green,self.startPos,self.nodeRad+20.1)
+        pygame.draw.circle(self.map,self.Green,self.startPos,self.nodeRad+5,0)
+        pygame.draw.circle(self.map,self.Red,self.goalPos,self.nodeRad+20,1)
         self.drawObs(obstacles)
-    def drawPath (self):
-        pass
+
+    def drawPath (self,path):
+        for node in path:
+            pygame.draw.circle(self.map,self.Red,node,self.nodeRad+3,0)
+        
 
     def drawObs(self,obstacles):
         obstaclesList = obstacles.copy()
@@ -205,17 +208,15 @@ class RRTGraph:
             (x,y) = (int(xNear + dMax * math.cos(theta)),
                      int(yNear + dMax * math.sin(theta)))
             self.removeNode(nRand) # This line will remove the node as soon as find the nearest one
-            if abs(x-self.goalPos[0])<35 and abs (y-self.goalPos[1])<35:
+            if abs(x-self.goalPos[0])<dMax and abs (y-self.goalPos[1])<dMax:
                 self.addNode(nRand,self.goalPos[0],self.goalPos[1])
                 self.goalstate = nRand
                 self.goalFlag = True 
             else:
                 self.addNode(nRand,x,y)
-    def pathToGoal(self):
-        pass
+        
 
-    def getPathCoords(self):
-        pass
+
 
     def bias (self, nGoal):
         n = self.numberOfNodes()
@@ -237,7 +238,24 @@ class RRTGraph:
         return self.x, self.y,self.parent
 
 
+    def pathToGoal(self):
+        if self.goalFlag: # If we find a path
+            self.path = []  # Saving the path nodes
+            self.path.append(self.goalstate)
+            newPos = self.parent[self.goalstate]
+            while (newPos != 0):
+                self.path.append(newPos)
+                newPos = self.parent[newPos]
+            self.path.append(0)
+        return self.goalFlag
+    
 
+    def getPathCoords(self):
+        pathCoords = []
+        for node in self.path:
+            x,y = (self.x[node],self.y[node])
+            pathCoords.append((x,y))
+        return pathCoords
 
     def Cost(self):
         pass

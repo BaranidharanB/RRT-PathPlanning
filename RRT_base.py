@@ -18,22 +18,20 @@ def main():
     obstacles = graph.makeobs()
     map.drawMap(obstacles)
 
-    while (iteration<500):
+    while (not graph.pathToGoal()):
         if iteration % 10 ==0:
             X,Y, Parent = graph.bias(goalPos)
             # The node (X[-1],Y[-1]) which is index[-1] to get the last node in the tree
             pygame.draw.circle(map.map,map.grey,(X[-1],Y[-1]),map.nodeRad+2,0)
             pygame.draw.line(map.map,map.Blue,(X[-1],Y[-1]),(X[Parent[-1]],Y[Parent[-1]]),map.edgeThickness)
-
         else:
             X,Y, Parent = graph.expand()
             pygame.draw.circle(map.map,map.grey,(X[-1],Y[-1]),map.nodeRad+2,0)
             pygame.draw.line(map.map,map.Blue,(X[-1],Y[-1]),(X[Parent[-1]],Y[Parent[-1]]),map.edgeThickness)
-
-            if iteration % 5 ==0:
+        if iteration % 5 ==0:
                 pygame.display.update()
-            iteration+=1
-
+        iteration+=1
+    map.drawPath(graph.getPathCoords())
     pygame.display.update()
     pygame.event.clear()
     pygame.event.wait(0)
